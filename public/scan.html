@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1d4ed8">
+  <title>Scanner QR — RastreaSPDA</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <style>
+    #reader { border-radius: var(--radius); overflow: hidden; }
+    #reader__scan_region { border-radius: var(--radius); }
+    #reader__dashboard_section_csr button {
+      background: var(--primary) !important;
+      color: #fff !important;
+      border-radius: var(--radius-sm) !important;
+      border: none !important;
+      padding: .6rem 1.25rem !important;
+      font-size: .9375rem !important;
+      font-weight: 600 !important;
+      cursor: pointer !important;
+    }
+    #reader__dashboard_section_swaplink { display: none !important; }
+    #reader__status_span { font-size: .8125rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1>Scanner QR</h1>
+  </header>
+
+  <main class="page-content">
+    <p style="font-size:.875rem;color:var(--text-muted);margin-bottom:1rem;text-align:center">
+      Aponte a câmera para o QR Code do ponto de inspeção
+    </p>
+
+    <div id="reader"></div>
+
+    <div id="scan-result" style="display:none" class="card" style="margin-top:1rem">
+      <div class="card-body">
+        <p style="font-size:.875rem;color:var(--text-muted)">Último resultado:</p>
+        <p id="result-text" style="font-weight:600;margin-top:.25rem"></p>
+      </div>
+    </div>
+
+    <div style="margin-top:1.5rem">
+      <p style="font-size:.75rem;color:var(--text-light);text-align:center;margin-bottom:.75rem">
+        Ou insira o código manualmente
+      </p>
+      <div style="display:flex;gap:.5rem">
+        <input class="form-input" id="manual-code" type="text" placeholder="Ex.: SB1-CI-001" style="text-transform:uppercase">
+        <button class="btn btn-primary" id="btn-manual">Buscar</button>
+      </div>
+    </div>
+  </main>
+
+  <div id="app-nav"></div>
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script type="module" src="./js/scan.js"></script>
+</body>
+</html>

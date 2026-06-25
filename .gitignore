@@ -1,0 +1,14 @@
+# Credenciais Firebase — não subir para repo público
+public/js/firebase-config.js
+
+# Logs / cache Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# Dependências (caso surjam)
+node_modules/
+
+# SO
+.DS_Store
+Thumbs.db

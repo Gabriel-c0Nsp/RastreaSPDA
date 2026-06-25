@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1d4ed8">
+  <title>Pontos — RastreaSPDA</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>Pontos de Inspeção</h1>
+  </header>
+
+  <main class="page-content">
+    <div class="filter-bar">
+      <select class="form-select" id="filter-cliente">
+        <option value="">Todos os clientes</option>
+      </select>
+      <select class="form-select" id="filter-area">
+        <option value="">Todas as áreas</option>
+      </select>
+    </div>
+
+    <div class="card" id="list-container">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+  </main>
+
+  <button class="fab" id="btn-add" title="Novo ponto">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
+
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">Novo Ponto</h2>
+        <button class="modal-close" id="btn-close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form id="form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="f-cliente">Cliente *</label>
+          <select class="form-select" id="f-cliente" required>
+            <option value="">Selecione…</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-area">Área *</label>
+          <select class="form-select" id="f-area" required>
+            <option value="">Selecione o cliente primeiro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-tipo">Tipo do Ponto *</label>
+          <select class="form-select" id="f-tipo" required>
+            <option value="">Selecione…</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-descricao">Descrição / Localização</label>
+          <textarea class="form-textarea" id="f-descricao" placeholder="Localização específica ou observações do ponto…" rows="2"></textarea>
+        </div>
+        <div class="card" style="padding:.75rem;background:var(--primary-light);border:1px solid var(--primary-border);border-radius:var(--radius-sm);margin-bottom:1rem">
+          <p style="font-size:.8rem;color:var(--primary);font-weight:600">Código gerado automaticamente</p>
+          <p style="font-size:1.25rem;font-weight:800;font-family:monospace;letter-spacing:.05em;color:var(--primary);margin-top:.25rem" id="codigo-preview">—</p>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="btn-cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-save">Criar Ponto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="app-nav"></div>
+  <div class="toast-container" id="toast-container"></div>
+  <script type="module" src="./js/pontos.js"></script>
+</body>
+</html>

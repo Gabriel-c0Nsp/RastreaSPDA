@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ATENÇÃO: regras abertas para desenvolvimento. Proteja antes de produção.
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

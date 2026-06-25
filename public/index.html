@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1d4ed8">
+  <title>Dashboard — RastreaSPDA</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>⚡ RastreaSPDA</h1>
+    <a href="scan.html" class="header-btn" title="Scanner QR">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    </a>
+  </header>
+
+  <main class="page-content">
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Clientes</div></div>
+      <div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Áreas</div></div>
+      <div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Pontos</div></div>
+      <div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Inspeções</div></div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-title">Conformidade Geral</span>
+    </div>
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="card-body">
+        <div class="chart-wrap">
+          <canvas id="chart-conformidade"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-title">Inspeções por Mês</span>
+    </div>
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="card-body">
+        <div class="chart-wrap">
+          <canvas id="chart-meses"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-title">Inspeções Recentes</span>
+    </div>
+    <div class="card" id="recent-list">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+  </main>
+
+  <div id="app-nav"></div>
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script type="module" src="./js/dashboard.js"></script>
+</body>
+</html>
