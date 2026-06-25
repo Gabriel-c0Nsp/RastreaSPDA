@@ -1,5 +1,10 @@
 import { getById, getSubAll, remove, formatDate } from './db.js';
+import { emaFilter, detectAnomaly, dspStats } from './dsp.js';
 import { renderNav, toast, icons, confirmDialog } from './utils.js';
+
+// Alpha do filtro EMA e k de desvios-padrão para anomalia (ver dsp.js / CLAUDE.md)
+const EMA_ALPHA = 0.3;
+const ANOMALY_K = 2;
 
 renderNav('pontos');
 
@@ -33,6 +38,22 @@ async function loadPonto() {
 
   document.getElementById('page-title').textContent = ponto.codigo;
 
+  // --- Preparo do sinal DSP ---
+  // inspecoes vem em ordem desc (mais recente primeiro); x[n] precisa ser cronológico.
+  const cronologico = [...inspecoes].reverse();
+  const serie = cronologico
+    .filter(i => i.resistencia != null)
+    .map(i => ({ valor: i.resistencia, data: i.timestamp }));
+  const x = serie.map(s => s.valor);
+  const podeDsp = x.length >= 2;
+
+  let y = [], anomalias = [], mu = 0, sigma = 0;
+  if (podeDsp) {
+    y = emaFilter(EMA_ALPHA, x);
+    anomalias = detectAnomaly(x, ANOMALY_K);
+    ({ mu, sigma } = dspStats(x));
+  }
+
   // Última inspeção
   const ultima = inspecoes[0];
   const statusBadge = ultima
@@ -62,6 +83,28 @@ async function loadPonto() {
             <div class="info-value" style="font-weight:400;font-size:.875rem">${ponto.descricao}</div>
           </div>` : ''}
         </div>
+      </div>
+    </div>
+
+    <!-- Análise do Sinal (DSP) -->
+    <div class="section-header">
+      <span class="section-title">Análise do Sinal (DSP)</span>
+    </div>
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="card-body">
+        ${podeDsp ? `
+          <div style="position:relative;height:260px">
+            <canvas id="dsp-chart"></canvas>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-top:.75rem;font-size:.75rem;color:var(--text-muted)">
+            <span>μ = ${mu.toFixed(2)} Ω</span>
+            <span>σ = ${sigma.toFixed(2)} Ω</span>
+            <span>EMA α = ${EMA_ALPHA}</span>
+            <span>limite = μ ± ${ANOMALY_K}σ</span>
+          </div>` : `
+          <p style="color:var(--text-muted);font-size:.875rem;text-align:center;padding:1rem 0">
+            Mínimo de 2 medições de resistência para análise DSP.
+          </p>`}
       </div>
     </div>
 
@@ -117,6 +160,11 @@ async function loadPonto() {
     correctLevel: QRCode.CorrectLevel.M
   });
 
+  // Gráfico DSP
+  if (podeDsp) {
+    renderDspChart({ serie, x, y, anomalias, mu, sigma });
+  }
+
   document.getElementById('btn-download').addEventListener('click', () => downloadQR(ponto.codigo));
   document.getElementById('btn-share').addEventListener('click', () => {
     if (navigator.share) {
@@ -126,6 +174,102 @@ async function loadPonto() {
       toast('URL copiada!', 'success');
     }
   });
+}
+
+function renderDspChart({ serie, x, y, anomalias, mu, sigma }) {
+  const canvas = document.getElementById('dsp-chart');
+  if (!canvas) return;
+
+  if (typeof Chart === 'undefined') {
+    toast('Não foi possível carregar a biblioteca de gráficos', 'danger');
+    return;
+  }
+
+  const labels = x.map((_, n) => n);                 // eixo X = índice n
+  const limSup = x.map(() => mu + ANOMALY_K * sigma);
+  const limInf = x.map(() => mu - ANOMALY_K * sigma);
+
+  // Cor de cada ponto de x[n]: vermelho onde há anomalia
+  const corNormal = '#1d4ed8';
+  const corAnomalia = '#dc2626';
+  const pointColors = anomalias.map(a => (a ? corAnomalia : corNormal));
+  const pointRadius = anomalias.map(a => (a ? 6 : 3));
+
+  try {
+    new Chart(canvas.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'x[n] — resistência (Ω)',
+            data: x,
+            borderColor: corNormal,
+            backgroundColor: 'transparent',
+            pointBackgroundColor: pointColors,
+            pointBorderColor: pointColors,
+            pointRadius,
+            pointHoverRadius: 7,
+            tension: 0,
+            order: 1
+          },
+          {
+            label: 'y[n] — EMA (α=' + EMA_ALPHA + ')',
+            data: y,
+            borderColor: '#16a34a',
+            backgroundColor: 'transparent',
+            pointRadius: 0,
+            tension: 0.35,
+            order: 2
+          },
+          {
+            label: 'μ + ' + ANOMALY_K + 'σ',
+            data: limSup,
+            borderColor: 'rgba(220,38,38,.5)',
+            borderDash: [6, 4],
+            pointRadius: 0,
+            tension: 0,
+            order: 3
+          },
+          {
+            label: 'μ − ' + ANOMALY_K + 'σ',
+            data: limInf,
+            borderColor: 'rgba(220,38,38,.5)',
+            borderDash: [6, 4],
+            pointRadius: 0,
+            tension: 0,
+            order: 4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            labels: { boxWidth: 12, font: { size: 11 }, usePointStyle: true }
+          },
+          tooltip: {
+            callbacks: {
+              title: (items) => {
+                const n = items[0].dataIndex;
+                const data = serie[n]?.data;
+                return `n = ${n}` + (data ? ` · ${formatDate(data)}` : '');
+              }
+            }
+          }
+        },
+        scales: {
+          x: { title: { display: true, text: 'n (índice da inspeção)' } },
+          y: { title: { display: true, text: 'Resistência (Ω)' } }
+        }
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    toast('Erro ao renderizar gráfico DSP', 'danger');
+  }
 }
 
 function renderInspecoes(inspecoes) {
