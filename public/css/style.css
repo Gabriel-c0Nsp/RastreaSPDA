@@ -106,6 +106,8 @@ img, svg { display: block; }
 .bottom-nav a svg { width: 22px; height: 22px; }
 .bottom-nav a.active { color: var(--primary); }
 .bottom-nav a span { line-height: 1; }
+/* Itens que só aparecem na sidebar desktop — ocultos na bottom nav mobile */
+.bottom-nav a.sidebar-only { display: none; }
 
 /* ── Page Content ───────────────────────────────────────────────────────── */
 .page-content {
@@ -616,6 +618,9 @@ img, svg { display: block; }
     align-items: stretch;
     justify-content: flex-start;
   }
+  /* Itens sidebar-only ficam visíveis no desktop */
+  .bottom-nav a.sidebar-only { display: flex; }
+
   .nav-logo {
     display: flex; align-items: center; gap: 0.5rem;
     padding: 1.25rem 1.25rem 1rem;

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1d4ed8">
+  <meta name="description" content="Configurações do sistema — RastreaSPDA">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="RastreaSPDA">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <title>Configurações — RastreaSPDA</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>Configurações</h1>
+  </header>
+
+  <main class="page-content">
+
+    <!-- Sobre o app -->
+    <div class="section-header"><span class="section-title">Sobre o App</span></div>
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="card-body" style="display:flex;flex-direction:column;align-items:center;padding:2rem 1rem;text-align:center;gap:.75rem">
+        <div style="width:72px;height:72px;border-radius:16px;background:var(--primary);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(29,78,216,.4)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:36px;height:36px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div>
+          <p style="font-size:1.125rem;font-weight:800;color:var(--text)">RastreaSPDA</p>
+          <p style="font-size:.8125rem;color:var(--text-muted);margin-top:.25rem">v1.0.0 — UEMA · 2026</p>
+        </div>
+        <p style="font-size:.875rem;color:var(--text-muted);max-width:320px;line-height:1.5">
+          Sistema de rastreabilidade de pontos de inspeção do SPDA com filtro IIR (EMA) para detecção de anomalias.
+        </p>
+      </div>
+    </div>
+
+    <!-- Parâmetros DSP -->
+    <div class="section-header"><span class="section-title">Parâmetros DSP</span></div>
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="card-header">
+        <span class="card-title">Filtro EMA</span>
+        <span class="badge badge-primary">IIR 1ª ordem</span>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="form-label" for="cfg-alpha">Alpha (α) — fator de suavização</label>
+          <div class="input-unit">
+            <input class="form-input" id="cfg-alpha" type="number" min="0.01" max="0.99" step="0.01" value="0.3">
+            <span class="unit-badge">0–1</span>
+          </div>
+          <p class="form-hint">Valores menores = mais suavização. Padrão: 0.3</p>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label" for="cfg-k">Limiar de anomalia (k σ)</label>
+          <div class="input-unit">
+            <input class="form-input" id="cfg-k" type="number" min="1" max="4" step="0.5" value="2">
+            <span class="unit-badge">σ</span>
+          </div>
+          <p class="form-hint">Desvios-padrão para considerar anomalia. Padrão: 2</p>
+        </div>
+      </div>
+      <div style="padding:.75rem 1rem;border-top:1px solid var(--border)">
+        <button class="btn btn-primary btn-full" id="btn-save-dsp">Salvar Parâmetros</button>
+      </div>
+    </div>
+
+    <!-- Fórmula H(z) -->
+    <div class="section-header"><span class="section-title">Referência Técnica</span></div>
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="card-header">
+        <span class="card-title">Função de Transferência</span>
+      </div>
+      <div class="card-body">
+        <div style="background:var(--primary-light);border:1px solid var(--primary-border);border-radius:var(--radius-sm);padding:1rem;text-align:center;margin-bottom:.75rem">
+          <p style="font-family:'SF Mono',monospace;font-size:1rem;font-weight:700;color:var(--primary);letter-spacing:.03em">
+            H(z) = α / (1 − (1−α)·z⁻¹)
+          </p>
+        </div>
+        <p style="font-size:.8125rem;color:var(--text-muted);line-height:1.6">
+          Polo em z = 1−α — dentro do círculo unitário, portanto o sistema é <strong>estável</strong>.<br><br>
+          <strong>⚠️ Ressalva:</strong> As inspeções ocorrem em intervalos irregulares de calendário. O índice n <em>não</em> representa frequência de amostragem fixa — o Teorema de Nyquist não se aplica literalmente.
+        </p>
+      </div>
+    </div>
+
+    <!-- Seed de dados -->
+    <div class="section-header"><span class="section-title">Dados de Demonstração</span></div>
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="card-body">
+        <p style="font-size:.875rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.5">
+          Popula o banco com dados simulados para a apresentação: 2 clientes, 6 áreas, 15 pontos e inspeções com anomalia no índice n=6.
+        </p>
+        <div style="background:var(--warning-light);border-left:3px solid var(--warning);border-radius:var(--radius-sm);padding:.875rem;margin-bottom:1rem">
+          <p style="font-size:.8125rem;font-weight:600;color:var(--warning)">⚠️ Execute apenas uma vez! Dados duplicados não são removidos automaticamente.</p>
+        </div>
+        <button class="btn btn-secondary btn-full" id="btn-seed" style="gap:.5rem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Carregar Dados de Demo
+        </button>
+        <div id="seed-log" style="display:none;margin-top:1rem;background:#f8fafc;border-radius:var(--radius-sm);padding:.75rem;max-height:200px;overflow-y:auto;font-size:.75rem;font-family:monospace;color:var(--text-muted);line-height:1.8"></div>
+      </div>
+    </div>
+
+    <!-- Equipe -->
+    <div class="section-header"><span class="section-title">Equipe</span></div>
+    <div class="card" style="margin-bottom:2rem">
+      <div class="list-item" style="cursor:default">
+        <div class="item-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="item-body">
+          <p class="item-title">Suamí</p>
+          <p class="item-subtitle">DSP · Gráficos · Relatório técnico</p>
+        </div>
+      </div>
+      <div class="list-item" style="cursor:default">
+        <div class="item-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="item-body">
+          <p class="item-title">Elton John</p>
+          <p class="item-subtitle">Banco de dados · Firestore · Seed</p>
+        </div>
+      </div>
+      <div class="list-item" style="cursor:default;border-bottom:none">
+        <div class="item-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="item-body">
+          <p class="item-title">Gabriel</p>
+          <p class="item-subtitle">Layout · Navegação · QR Code</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="app-nav"></div>
+  <div class="toast-container" id="toast-container"></div>
+
+  <script type="module" src="./js/configuracoes.js"></script>
+  <script>if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));</script>
+</body>
+</html>

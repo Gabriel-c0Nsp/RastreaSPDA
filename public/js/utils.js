@@ -16,7 +16,9 @@ export const icons = {
   download: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
   eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
   mapPin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
-  lightning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`
+  lightning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+  alert: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  map: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>`,
 };
 
 // ── Toast ──────────────────────────────────────────────────────────────────
@@ -66,25 +68,39 @@ export function emptyState(icon, title, desc = '') {
 }
 
 // ── Bottom Nav ─────────────────────────────────────────────────────────────
+// Mobile: 5 itens principais (Início, Pontos, Scanner, Alertas, Clientes)
+// Desktop sidebar: todos os itens incluindo Áreas, Tipos, Configurações
 export function renderNav(active) {
   const container = document.getElementById('app-nav');
   if (!container) return;
 
-  const items = [
-    { href: 'index.html', key: 'dashboard', icon: 'home', label: 'Início' },
-    { href: 'clientes.html', key: 'clientes', icon: 'users', label: 'Clientes' },
-    { href: 'pontos.html', key: 'pontos', icon: 'clipboard', label: 'Pontos' },
-    { href: 'scan.html', key: 'scanner', icon: 'qr', label: 'Scanner' },
-    { href: 'tipos-ponto.html', key: 'tipos', icon: 'settings', label: 'Tipos' },
+  // Itens exibidos em ambos os layouts
+  const mobileItems = [
+    { href: 'index.html',            key: 'dashboard',    icon: 'home',      label: 'Início' },
+    { href: 'pontos.html',           key: 'pontos',        icon: 'clipboard', label: 'Pontos' },
+    { href: 'scan.html',             key: 'scanner',       icon: 'qr',        label: 'Scan' },
+    { href: 'nao-conformidade.html', key: 'alertas',       icon: 'alert',     label: 'Alertas' },
+    { href: 'clientes.html',         key: 'clientes',      icon: 'users',     label: 'Clientes' },
   ];
+
+  // Itens adicionais apenas na sidebar desktop
+  const sidebarExtra = [
+    { href: 'areas.html',          key: 'areas',         icon: 'map',       label: 'Áreas' },
+    { href: 'tipos-ponto.html',    key: 'tipos',         icon: 'settings',  label: 'Tipos' },
+    { href: 'configuracoes.html',  key: 'configuracoes', icon: 'settings',  label: 'Configurações' },
+  ];
+
+  const allItems = [...mobileItems, ...sidebarExtra];
 
   container.innerHTML = `
     <nav class="bottom-nav" role="navigation" aria-label="Menu principal">
       <div class="nav-logo">
         ${icons.lightning} RastreaSPDA
       </div>
-      ${items.map(item => `
-        <a href="${item.href}" class="${active === item.key ? 'active' : ''}" ${active === item.key ? 'aria-current="page"' : ''}>
+      ${allItems.map(item => `
+        <a href="${item.href}"
+           class="${active === item.key ? 'active' : ''}${sidebarExtra.find(e => e.key === item.key) ? ' sidebar-only' : ''}"
+           ${active === item.key ? 'aria-current="page"' : ''}>
           ${icons[item.icon]}
           <span>${item.label}</span>
         </a>

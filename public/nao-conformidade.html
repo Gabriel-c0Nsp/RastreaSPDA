@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#dc2626">
+  <meta name="description" content="Não conformidades e alertas de anomalia SPDA — RastreaSPDA">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="RastreaSPDA">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <title>Alertas — RastreaSPDA</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>⚠️ Alertas</h1>
+  </header>
+
+  <main class="page-content">
+
+    <!-- Resumo de alertas -->
+    <div class="stats-grid" id="alert-stats" style="margin-bottom:1.25rem">
+      <div class="stat-card danger">
+        <div class="stat-value" id="count-anomalias">—</div>
+        <div class="stat-label">Anomalias DSP</div>
+      </div>
+      <div class="stat-card danger">
+        <div class="stat-value" id="count-nao-conformes">—</div>
+        <div class="stat-label">Não Conformes</div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-value" id="count-ruim">—</div>
+        <div class="stat-label">Cond. Ruim/Crítica</div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-value" id="count-sem-insp">—</div>
+        <div class="stat-label">Sem Inspeção</div>
+      </div>
+    </div>
+
+    <!-- Filtro -->
+    <div class="filter-bar" style="margin-bottom:1rem">
+      <select class="form-select" id="filter-tipo">
+        <option value="all">Todos os alertas</option>
+        <option value="anomalia">Anomalias DSP</option>
+        <option value="nao-conforme">Não conformes</option>
+        <option value="condicao">Condição ruim/crítica</option>
+        <option value="sem-inspecao">Sem inspeção</option>
+      </select>
+      <select class="form-select" id="filter-cliente">
+        <option value="">Todos os clientes</option>
+      </select>
+    </div>
+
+    <!-- Lista de alertas -->
+    <div id="alert-list">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+
+  </main>
+
+  <div id="app-nav"></div>
+  <div class="toast-container" id="toast-container"></div>
+
+  <script type="module" src="./js/nao-conformidade.js"></script>
+  <script>if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));</script>
+</body>
+</html>
